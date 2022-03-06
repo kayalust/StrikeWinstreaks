@@ -1,0 +1,6 @@
+name: StrikeWinstreaks
+version: '${project.version}'
+main: net.crackpixel.winstreaks.StrikeWinstreaks
+author: kayalust
+depend:
+  - StrikePractice
