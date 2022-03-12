@@ -38,9 +38,11 @@ public class MongoManager {
 
     public void shutdown() {
         try {
-            Thread.sleep(50L);
+            Thread.sleep(50L); // This stops the main thread for a bit, stop crying about it
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+
+        this.client.close();
     }
 }

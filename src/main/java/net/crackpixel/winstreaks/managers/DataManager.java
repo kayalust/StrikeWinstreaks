@@ -42,44 +42,36 @@ public class DataManager {
         Bukkit.getServer().getPluginManager().registerEvents(new PlayerListener(plugin), plugin);
     }
 
-    @SneakyThrows
     public void savePlayerData(PlayerData data) {
-        ForkJoinPool.commonPool().execute(() -> plugin.getMongoManager().getPlayers().replaceOne(Filters.eq("_id", data.getUuid().toString()), data.toBson(), new ReplaceOptions().upsert(true)));
+        plugin.getMongoManager().getPlayers().replaceOne(Filters.eq("_id", data.getUuid().toString()), data.toBson(), new ReplaceOptions().upsert(true));
     }
 
-    @SneakyThrows
     public void loadPlayerData(PlayerData data) {
         StrikePracticeAPI api = StrikePractice.getAPI();
 
-        ForkJoinPool.commonPool().execute(() -> {
-            Document document = plugin.getMongoManager().getPlayers().find(Filters.eq("_id", data.getUuid().toString())).first();
+        Document document = plugin.getMongoManager().getPlayers().find(Filters.eq("_id", data.getUuid().toString())).first();
 
-            if (document == null) {
-                this.savePlayerData(data);
-                playerData.putIfAbsent(data.getUuid(), data);
-                return;
-            }
-
-            data.setWinstreak(document.getInteger("overallWinstreak", 0));
-            data.setBestWinstreak(document.getInteger("overallBestWinstreak", 0));
-
-            Document dataDocument = (Document) document.get("kitData");
-
-            for (String key : dataDocument.keySet()) {
-                Document kitDocument = (Document) dataDocument.get(key);
-
-                KitData kitData = new KitData();
-                kitData.setWinstreak(kitDocument.getInteger("winstreak", 0));
-                kitData.setBestWinstreak(kitDocument.getInteger("bestWinstreak", 0));
-
-                data.getKitData().put(api.getKit(key), kitData);
-            }
-
+        if (document == null) {
+            this.savePlayerData(data);
             playerData.putIfAbsent(data.getUuid(), data);
-        });
-    }
+            return;
+        }
 
-    public PlayerData getByPlayer(Player player) {
-        return playerData.get(player.getUniqueId());
+        data.setWinstreak(document.getInteger("overallWinstreak", 0));
+        data.setBestWinstreak(document.getInteger("overallBestWinstreak", 0));
+
+        Document dataDocument = (Document) document.get("kitData");
+
+        for (String key : dataDocument.keySet()) {
+            Document kitDocument = (Document) dataDocument.get(key);
+
+            KitData kitData = new KitData();
+            kitData.setWinstreak(kitDocument.getInteger("winstreak", 0));
+            kitData.setBestWinstreak(kitDocument.getInteger("bestWinstreak", 0));
+
+            data.getKitData().put(api.getKit(key), kitData);
+        }
+
+        playerData.putIfAbsent(data.getUuid(), data);
     }
 }

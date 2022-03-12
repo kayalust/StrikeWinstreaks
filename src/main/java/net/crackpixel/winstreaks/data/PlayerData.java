@@ -2,6 +2,7 @@ package net.crackpixel.winstreaks.data;
 
 import ga.strikepractice.battlekit.BattleKit;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.bson.Document;
 
@@ -19,15 +20,12 @@ import java.util.UUID;
  */
 
 @Getter @Setter
+@RequiredArgsConstructor
 public class PlayerData {
-    private UUID uuid;
+    private final UUID uuid;
     private int winstreak, bestWinstreak;
 
     private final Map<BattleKit, KitData> kitData = new HashMap<>();
-
-    public PlayerData(UUID uuid) {
-        this.uuid = uuid;
-    }
 
     public Document toBson() {
         Document document = new Document();

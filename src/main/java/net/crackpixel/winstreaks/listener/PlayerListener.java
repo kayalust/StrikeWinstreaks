@@ -12,6 +12,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.util.concurrent.ForkJoinPool;
+
 /**
  * This Project is property of kayalust © 2022
  * Redistribution of this Project is not allowed
@@ -34,16 +36,16 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        PlayerData data = plugin.getDataManager().getByPlayer(event.getPlayer());
-        plugin.getDataManager().savePlayerData(data);
+        PlayerData data = plugin.getDataManager().getPlayerData().get(event.getPlayer().getUniqueId());
+        ForkJoinPool.commonPool().execute(() -> plugin.getDataManager().savePlayerData(data));
     }
 
     @EventHandler
     public void onEnd(DuelEndEvent event) {
         DataManager dataManager = plugin.getDataManager();
 
-        PlayerData winnerData = dataManager.getByPlayer(event.getWinner());
-        PlayerData loserData = dataManager.getByPlayer(event.getLoser());
+        PlayerData winnerData = dataManager.getPlayerData().get(event.getWinner().getUniqueId());
+        PlayerData loserData = dataManager.getPlayerData().get(event.getLoser().getUniqueId());
 
         if (winnerData.getWinstreak() >= winnerData.getBestWinstreak()) winnerData.setBestWinstreak(winnerData.getWinstreak());
         winnerData.setWinstreak(winnerData.getWinstreak() + 1);
