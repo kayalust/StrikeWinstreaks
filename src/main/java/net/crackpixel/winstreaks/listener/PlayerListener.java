@@ -1,12 +1,10 @@
 package net.crackpixel.winstreaks.listener;
 
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.ReplaceOptions;
 import ga.strikepractice.events.DuelEndEvent;
 import lombok.RequiredArgsConstructor;
 import net.crackpixel.winstreaks.StrikeWinstreaks;
-import net.crackpixel.winstreaks.managers.DataManager;
-import net.crackpixel.winstreaks.data.PlayerData;
+import net.crackpixel.winstreaks.managers.PlayerDataManager;
+import net.crackpixel.winstreaks.models.PlayerData;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
@@ -31,27 +29,27 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onLogin(AsyncPlayerPreLoginEvent event) {
         PlayerData data = new PlayerData(event.getUniqueId());
-        plugin.getDataManager().loadPlayerData(data);
+        plugin.getPlayerDataManager().loadPlayerData(data);
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        PlayerData data = plugin.getDataManager().getPlayerData().get(event.getPlayer().getUniqueId());
-        ForkJoinPool.commonPool().execute(() -> plugin.getDataManager().savePlayerData(data));
+        PlayerData data = plugin.getPlayerDataManager().getPlayerData().get(event.getPlayer().getUniqueId());
+        ForkJoinPool.commonPool().execute(() -> plugin.getPlayerDataManager().savePlayerData(data));
     }
 
     @EventHandler
     public void onEnd(DuelEndEvent event) {
-        DataManager dataManager = plugin.getDataManager();
+        PlayerDataManager playerDataManager = plugin.getPlayerDataManager();
 
-        PlayerData winnerData = dataManager.getPlayerData().get(event.getWinner().getUniqueId());
-        PlayerData loserData = dataManager.getPlayerData().get(event.getLoser().getUniqueId());
+        PlayerData winnerData = playerDataManager.getPlayerData().get(event.getWinner().getUniqueId());
+        PlayerData loserData = playerDataManager.getPlayerData().get(event.getLoser().getUniqueId());
 
         if (winnerData.getWinstreak() >= winnerData.getBestWinstreak()) winnerData.setBestWinstreak(winnerData.getWinstreak());
         winnerData.setWinstreak(winnerData.getWinstreak() + 1);
         loserData.setWinstreak(0);
 
-        dataManager.savePlayerData(winnerData);
-        dataManager.savePlayerData(loserData);
+        playerDataManager.savePlayerData(winnerData);
+        playerDataManager.savePlayerData(loserData);
     }
 }

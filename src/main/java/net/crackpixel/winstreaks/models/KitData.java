@@ -1,4 +1,4 @@
-package net.crackpixel.winstreaks.data;
+package net.crackpixel.winstreaks.models;
 
 import lombok.Data;
 

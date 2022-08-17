@@ -1,8 +1,9 @@
 package net.crackpixel.winstreaks;
 
 import lombok.Getter;
-import net.crackpixel.winstreaks.managers.MongoManager;
-import net.crackpixel.winstreaks.managers.DataManager;
+import net.crackpixel.winstreaks.database.DatabaseHandler;
+import net.crackpixel.winstreaks.database.impl.MongoDatabaseHandler;
+import net.crackpixel.winstreaks.managers.PlayerDataManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
@@ -11,24 +12,24 @@ public final class StrikeWinstreaks extends JavaPlugin {
     @Getter
     private static StrikeWinstreaks instance;
 
-    private DataManager dataManager;
-    private MongoManager mongoManager;
+    private PlayerDataManager playerDataManager;
+    private DatabaseHandler databaseHandler;
 
     @Override
     public void onEnable() {
         instance = this;
 
-        mongoManager = new MongoManager(this);
-        mongoManager.init();
+        this.databaseHandler = new MongoDatabaseHandler(this);
+        this.databaseHandler.connect();
 
-        dataManager = new DataManager(this);
-        dataManager.init();
+        this.playerDataManager = new PlayerDataManager(this);
+        this.playerDataManager.init();
     }
 
     @Override
     public void onDisable() {
-        dataManager.getPlayerData().values().forEach(dataManager::savePlayerData);
-        mongoManager.shutdown();
+        playerDataManager.getPlayerData().values().forEach(playerDataManager::savePlayerData);
+        databaseHandler.shutdown();
 
         instance = null;
     }

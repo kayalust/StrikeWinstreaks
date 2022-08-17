@@ -1,4 +1,4 @@
-package net.crackpixel.winstreaks.data;
+package net.crackpixel.winstreaks.models;
 
 import ga.strikepractice.battlekit.BattleKit;
 import lombok.Getter;
