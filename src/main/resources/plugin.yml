@@ -4,3 +4,5 @@ main: net.crackpixel.winstreaks.StrikeWinstreaks
 author: kayalust
 depend:
   - StrikePractice
+softdepend:
+  - PlaceholderAPI

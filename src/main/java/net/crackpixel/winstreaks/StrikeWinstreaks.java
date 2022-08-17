@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.crackpixel.winstreaks.database.DatabaseHandler;
 import net.crackpixel.winstreaks.database.impl.MongoDatabaseHandler;
 import net.crackpixel.winstreaks.managers.PlayerDataManager;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
@@ -24,6 +25,8 @@ public final class StrikeWinstreaks extends JavaPlugin {
 
         this.playerDataManager = new PlayerDataManager(this);
         this.playerDataManager.init();
+
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) new WinstreaksExpansion().register();
     }
 
     @Override
